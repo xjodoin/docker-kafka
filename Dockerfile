@@ -6,9 +6,8 @@ ENV KAFKA_RELEASE_ARCHIVE kafka_${KAFKA_SCALA_VERSION}-${KAFKA_VERSION}.tgz
 
 RUN mkdir /kafka /data /logs
 
-RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    ca-certificates
+RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb
+RUN dpkg -i dumb-init_*.deb
 
 # Download Kafka binary distribution
 ADD http://www.us.apache.org/dist/kafka/${KAFKA_VERSION}/${KAFKA_RELEASE_ARCHIVE} /tmp/
@@ -36,4 +35,4 @@ WORKDIR /kafka
 EXPOSE 9092 ${JMX_PORT}
 VOLUME [ "/data", "/logs" ]
 
-CMD ["/start.sh"]
+ENTRYPOINT ["/usr/bin/dumb-init", "/start.sh"]
